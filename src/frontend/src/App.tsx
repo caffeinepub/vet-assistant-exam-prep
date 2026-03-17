@@ -7,6 +7,7 @@ import BookmarksPage from "./pages/BookmarksPage";
 import DailyChallengePage from "./pages/DailyChallengePage";
 import FlashcardsPage from "./pages/FlashcardsPage";
 import HomePage, { type HomeNavTarget } from "./pages/HomePage";
+import PrepVideoPage from "./pages/PrepVideoPage";
 import ProgressPage from "./pages/ProgressPage";
 import QuickStudyPage from "./pages/QuickStudyPage";
 import QuizPage from "./pages/QuizPage";
@@ -14,7 +15,13 @@ import ScenariosPage from "./pages/ScenariosPage";
 import VideosPage from "./pages/VideosPage";
 import VisualLearningPage from "./pages/VisualLearningPage";
 
-type SubPage = "daily" | "quick" | "visual" | "scenarios" | "bookmarks";
+type SubPage =
+  | "daily"
+  | "quick"
+  | "visual"
+  | "scenarios"
+  | "bookmarks"
+  | "prepVideo";
 
 export default function App() {
   const { actor, isFetching } = useActor();
@@ -138,6 +145,16 @@ export default function App() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-[430px] mx-auto px-4 pt-6 pb-6">
           <QuickStudyPage questions={questions} onBack={handleBack} />
+        </div>
+      </div>
+    );
+  }
+
+  if (subPage === "prepVideo") {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-[430px] mx-auto px-4 pt-6 pb-6">
+          <PrepVideoPage onBack={handleBack} />
         </div>
       </div>
     );

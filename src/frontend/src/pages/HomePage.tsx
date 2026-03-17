@@ -1,5 +1,5 @@
 import {
-  Bookmark,
+  CheckCircle,
   ChevronRight,
   ClipboardList,
   Eye,
@@ -7,8 +7,8 @@ import {
   Layers,
   Play,
   Search,
-  Stethoscope,
   Trophy,
+  Video,
   Zap,
 } from "lucide-react";
 import { useState } from "react";
@@ -23,7 +23,8 @@ export type HomeNavTarget =
   | "scenarios"
   | "bookmarks"
   | "daily"
-  | "quick";
+  | "quick"
+  | "prepVideo";
 
 interface HomePageProps {
   questions: Question[];
@@ -32,6 +33,46 @@ interface HomePageProps {
   dailyCompleted: boolean;
   onNavigate: (page: HomeNavTarget) => void;
 }
+
+const STUDY_STEPS: {
+  label: string;
+  description: string;
+  page: HomeNavTarget;
+  completedKey?: string;
+  Icon: React.FC<{ size?: number; className?: string }>;
+}[] = [
+  {
+    label: "Watch Prep Video",
+    description: "Start here with the training demonstration",
+    page: "prepVideo",
+    completedKey: "vet_prep_video_completed",
+    Icon: Video,
+  },
+  {
+    label: "Flashcards",
+    description: "Review key terms and concepts",
+    page: "flashcards",
+    Icon: Layers,
+  },
+  {
+    label: "Visual Instrument Training",
+    description: "Identify veterinary instruments",
+    page: "visual",
+    Icon: Eye,
+  },
+  {
+    label: "Practice Quizzes",
+    description: "Test your knowledge with practice questions",
+    page: "quiz",
+    Icon: ClipboardList,
+  },
+  {
+    label: "Certification Practice Exam",
+    description: "Full exam simulation to test readiness",
+    page: "quiz",
+    Icon: Play,
+  },
+];
 
 export default function HomePage({
   questions,
@@ -63,50 +104,6 @@ export default function HomePage({
             })),
         ]
       : [];
-
-  const modes: {
-    label: string;
-    icon: React.FC<{ size?: number }>;
-    color: string;
-    page: HomeNavTarget;
-  }[] = [
-    {
-      label: "Practice Quiz",
-      icon: ClipboardList,
-      color: "bg-blue-50 text-blue-600",
-      page: "quiz",
-    },
-    {
-      label: "Flashcards",
-      icon: Layers,
-      color: "bg-purple-50 text-purple-600",
-      page: "flashcards",
-    },
-    {
-      label: "Visual Learning",
-      icon: Eye,
-      color: "bg-orange-50 text-orange-600",
-      page: "visual",
-    },
-    {
-      label: "Videos",
-      icon: Play,
-      color: "bg-red-50 text-red-600",
-      page: "videos",
-    },
-    {
-      label: "Clinic Scenarios",
-      icon: Stethoscope,
-      color: "bg-green-50 text-green-600",
-      page: "scenarios",
-    },
-    {
-      label: "Bookmarks",
-      icon: Bookmark,
-      color: "bg-yellow-50 text-yellow-600",
-      page: "bookmarks",
-    },
-  ];
 
   return (
     <div className="flex flex-col gap-5 pb-4">
@@ -153,7 +150,11 @@ export default function HomePage({
               className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 last:border-0"
             >
               <span
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.type === "Question" ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"}`}
+                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  r.type === "Question"
+                    ? "bg-blue-50 text-blue-600"
+                    : "bg-purple-50 text-purple-600"
+                }`}
               >
                 {r.type}
               </span>
@@ -182,7 +183,7 @@ export default function HomePage({
           </span>
         </div>
         <p className="text-white font-bold text-lg">
-          {dailyCompleted ? "Challenge Complete! ✓" : "10 Questions Today"}
+          {dailyCompleted ? "Challenge Complete! \u2713" : "10 Questions Today"}
         </p>
         <p className="text-teal-100 text-sm mt-1">
           {dailyCompleted
@@ -213,28 +214,54 @@ export default function HomePage({
         <ChevronRight size={18} className="text-gray-300 ml-auto" />
       </button>
 
+      {/* Recommended Study Flow */}
       <div>
         <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">
-          Study Modes
+          Recommended Study Flow
         </h2>
-        <div className="grid grid-cols-2 gap-3">
-          {modes.map(({ label, icon: Icon, color, page }) => (
-            <button
-              type="button"
-              key={page}
-              onClick={() => onNavigate(page)}
-              className="bg-white rounded-2xl p-4 text-left border border-gray-100 shadow-sm flex items-center gap-3 active:scale-95 transition-transform"
-            >
-              <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}
+        <div className="flex flex-col gap-2">
+          {STUDY_STEPS.map((step, idx) => {
+            const done = step.completedKey
+              ? localStorage.getItem(step.completedKey) === "true"
+              : false;
+            const ocid = `home.study_flow.step.${idx + 1}` as const;
+
+            return (
+              <button
+                type="button"
+                key={`${step.page}-${idx}`}
+                data-ocid={ocid}
+                onClick={() => onNavigate(step.page)}
+                className="w-full bg-white rounded-2xl p-4 text-left border border-gray-100 shadow-sm flex items-center gap-4 active:scale-[0.98] transition-transform"
               >
-                <Icon size={18} />
-              </div>
-              <span className="text-sm font-semibold text-gray-700">
-                {label}
-              </span>
-            </button>
-          ))}
+                {/* Step badge */}
+                <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center flex-shrink-0 font-bold text-sm">
+                  {idx + 1}
+                </div>
+                {/* Text */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-gray-800 text-sm truncate">
+                    {step.label}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {step.description}
+                  </p>
+                </div>
+                {/* Completed badge or chevron */}
+                {done ? (
+                  <CheckCircle
+                    size={20}
+                    className="text-green-500 flex-shrink-0"
+                  />
+                ) : (
+                  <ChevronRight
+                    size={18}
+                    className="text-gray-300 flex-shrink-0"
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
