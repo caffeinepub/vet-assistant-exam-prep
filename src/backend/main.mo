@@ -1160,6 +1160,90 @@ actor {
       "A looped leash that slides over a dog\u{2019}s head and tightens gently for control",
       "Used to move dogs safely from cage to exam room when a regular collar is unavailable.",
       "animal_handling");
+
+    // ---- RESTRAINT (4) ----
+    addF("Towel Restraint",
+      "Technique used to safely control cats during exams",
+      "Wrap the cat snugly in a towel to restrict limb movement and reduce bite/scratch risk.",
+      "restraint");
+    addF("Lateral Restraint",
+      "Animal is positioned on its side for procedures",
+      "Used for jugular blood draws, radiographs, and minor procedures.",
+      "restraint");
+    addF("Sternal Restraint",
+      "Animal positioned belly-down in sphinx position",
+      "Common for cats and rabbits; reduces respiratory stress.",
+      "restraint");
+    addF("Standing Restraint",
+      "Animal is held in a standing position during exams or procedures",
+      "Used for physical examinations, blood draws from the cephalic vein, and nail trims.",
+      "restraint");
+
+    // ---- SANITATION (5) ----
+    addF("Sharps Container",
+      "Used to safely dispose of needles and sharp objects",
+      "Required by OSHA for all sharp waste; prevents needle-stick injuries.",
+      "sanitation");
+    addF("Biohazard Bag",
+      "Used for contaminated waste materials",
+      "Red biohazard bags hold materials exposed to bodily fluids or infectious agents.",
+      "sanitation");
+    addF("Autoclave Sterilization",
+      "Uses pressurized steam to sterilize surgical instruments",
+      "Instruments must be cleaned first; indicators confirm successful sterilization.",
+      "sanitation");
+    addF("PPE (Personal Protective Equipment)",
+      "Gloves, masks, gowns, and eye protection worn to prevent infection",
+      "Required when handling bodily fluids, performing procedures, or working with zoonotic cases.",
+      "sanitation");
+    addF("Disinfectant vs. Sterilant",
+      "Disinfectants reduce pathogens on surfaces; sterilants eliminate all microbial life",
+      "Choose based on surface type and required level of microbial kill.",
+      "sanitation");
+
+    // ---- TERMINOLOGY (6) ----
+    addF("Lateral Position",
+      "Animal lying on its side",
+      "Lateral recumbency; used for radiographs and many procedures.",
+      "terminology");
+    addF("Anterior",
+      "Front of the body",
+      "Toward the head end; opposite of posterior.",
+      "terminology");
+    addF("Posterior",
+      "Back of the body",
+      "Toward the tail end; opposite of anterior.",
+      "terminology");
+    addF("Dorsal",
+      "Toward the back/top surface of the animal",
+      "Dorsal recumbency means the animal is lying on its back.",
+      "terminology");
+    addF("Ventral",
+      "Toward the belly/underside of the animal",
+      "The ventral surface faces the ground when the animal is standing.",
+      "terminology");
+    addF("Proximal vs. Distal",
+      "Proximal: closer to the body; Distal: farther from the body",
+      "Used to describe limb anatomy; e.g., proximal femur vs. distal tibia.",
+      "terminology");
+
+    // ---- COMMUNICATION (4) ----
+    addF("Patient Intake",
+      "Collecting owner info and pet symptoms before exam",
+      "Includes signalment, chief complaint, medical history, and current medications.",
+      "communication");
+    addF("SOAP Notes",
+      "Subjective, Objective, Assessment, Plan - format for medical records",
+      "Standard format for veterinary medical records; ensures complete documentation.",
+      "communication");
+    addF("Client Discharge Instructions",
+      "Written and verbal instructions given to owners at checkout",
+      "Include medications, activity restrictions, follow-up appointments, and warning signs.",
+      "communication");
+    addF("Informed Consent",
+      "Owner agreement to a procedure after understanding risks and benefits",
+      "Must be obtained before any surgical procedure or sedation.",
+      "communication");
   };
 
   func populateScenarios() {

@@ -12,9 +12,13 @@ interface FlashcardsPageProps {
 const CATEGORIES = [
   { key: "all", label: "All Categories" },
   { key: "instruments", label: "Veterinary Instruments" },
-  { key: "medical_terms", label: "Medical Terms" },
   { key: "vital_signs", label: "Vital Sign Ranges" },
-  { key: "animal_handling", label: "Animal Handling Techniques" },
+  { key: "medical_terms", label: "Medical Terms" },
+  { key: "animal_handling", label: "Animal Handling" },
+  { key: "restraint", label: "Restraint Techniques" },
+  { key: "sanitation", label: "Sanitation & Safety" },
+  { key: "terminology", label: "Anatomy & Terminology" },
+  { key: "communication", label: "Communication & Records" },
 ];
 
 function shuffle<T>(arr: T[]): T[] {
