@@ -3,6 +3,8 @@ import { useState } from "react";
 import type { Flashcard } from "../backend";
 import FlashCard from "../components/FlashCard";
 import LoadingScreen from "../components/LoadingScreen";
+import { isDebugMode, registerDebugTap } from "../utils/debugMode";
+import { shuffle } from "../utils/quizUtils";
 
 interface FlashcardsPageProps {
   flashcards: Flashcard[];
@@ -21,29 +23,61 @@ const CATEGORIES = [
   { key: "communication", label: "Communication & Records" },
 ];
 
-function shuffle<T>(arr: T[]): T[] {
-  return [...arr].sort(() => Math.random() - 0.5);
-}
-
 export default function FlashcardsPage({
   flashcards,
   loading,
 }: FlashcardsPageProps) {
   const [categoryKey, setCategoryKey] = useState<string | null>(null);
+  // shuffledDeck is built once per session (or on manual reshuffle)
   const [deck, setDeck] = useState<Flashcard[]>([]);
+  // currentIndex advances sequentially — no random picks
   const [idx, setIdx] = useState(0);
+  // track IDs shown this session to prevent any accidental repeats
+  const [shownIDs, setShownIDs] = useState<Set<bigint>>(new Set());
+  const [debugOn, setDebugOn] = useState(false);
 
   const startDeck = (key: string) => {
     const cards =
       key === "all" ? flashcards : flashcards.filter((f) => f.category === key);
-    setDeck(shuffle(cards));
+    const shuffled = shuffle(cards);
+    setDeck(shuffled);
     setIdx(0);
+    setShownIDs(new Set([shuffled[0]?.id].filter(Boolean) as bigint[]));
     setCategoryKey(key);
   };
 
+  // Manual reshuffle — only after completing the deck or user request
   const handleShuffle = () => {
     setDeck((d) => shuffle(d));
     setIdx(0);
+    setShownIDs(new Set());
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= deck.length) {
+      // Full deck complete — reshuffle for a new round
+      const reshuffled = shuffle(deck);
+      setDeck(reshuffled);
+      setIdx(0);
+      setShownIDs(new Set([reshuffled[0]?.id].filter(Boolean) as bigint[]));
+    } else {
+      setIdx(nextIdx);
+      setShownIDs((prev) => {
+        const next = new Set(prev);
+        next.add(deck[nextIdx].id);
+        return next;
+      });
+    }
+  };
+
+  const handlePrev = () => {
+    setIdx((i) => Math.max(0, i - 1));
+  };
+
+  const handleCounterTap = () => {
+    const toggled = registerDebugTap();
+    if (toggled) setDebugOn(isDebugMode());
   };
 
   if (loading) return <LoadingScreen />;
@@ -91,6 +125,8 @@ export default function FlashcardsPage({
     );
   }
 
+  const currentCard = deck[idx];
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
@@ -111,9 +147,21 @@ export default function FlashcardsPage({
         </button>
       </div>
 
-      <p className="text-center text-sm text-gray-500">
+      {/* Tap counter 5x to toggle debug */}
+      <button
+        type="button"
+        onClick={handleCounterTap}
+        className="text-center text-sm text-gray-500 select-none"
+      >
         {idx + 1} / {deck.length}
-      </p>
+      </button>
+
+      {debugOn && currentCard && (
+        <div className="text-xs bg-yellow-50 border border-yellow-300 rounded-xl px-3 py-1.5 text-yellow-800 font-mono">
+          🔍 DEBUG — Card ID: {String(currentCard.id)} | Seen this round:{" "}
+          {shownIDs.size} / {deck.length}
+        </div>
+      )}
 
       {/* Progress dots */}
       <div className="flex gap-1 justify-center flex-wrap">
@@ -128,13 +176,13 @@ export default function FlashcardsPage({
         ))}
       </div>
 
-      <FlashCard key={`${idx}-${deck[idx]?.id}`} card={deck[idx]} />
+      <FlashCard key={`${idx}-${currentCard?.id}`} card={currentCard} />
 
       <div className="flex gap-3">
         <button
           type="button"
           data-ocid="flashcard.prev_button"
-          onClick={() => setIdx((i) => Math.max(0, i - 1))}
+          onClick={handlePrev}
           disabled={idx === 0}
           className="flex-1 py-4 bg-white border-2 border-gray-200 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-semibold disabled:opacity-40"
         >
@@ -143,11 +191,11 @@ export default function FlashcardsPage({
         <button
           type="button"
           data-ocid="flashcard.next_button"
-          onClick={() => setIdx((i) => Math.min(deck.length - 1, i + 1))}
-          disabled={idx === deck.length - 1}
-          className="flex-1 py-4 bg-teal-600 text-white rounded-2xl flex items-center justify-center gap-2 font-semibold disabled:opacity-40"
+          onClick={handleNext}
+          className="flex-1 py-4 bg-teal-600 text-white rounded-2xl flex items-center justify-center gap-2 font-semibold"
         >
-          Next <ChevronRight size={18} />
+          {idx === deck.length - 1 ? "Restart" : "Next"}{" "}
+          <ChevronRight size={18} />
         </button>
       </div>
     </div>

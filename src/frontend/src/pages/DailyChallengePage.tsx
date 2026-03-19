@@ -3,14 +3,11 @@ import { useEffect, useState } from "react";
 import type { Question } from "../backend";
 import QuestionCard from "../components/QuestionCard";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { buildQuiz } from "../utils/quizUtils";
 
 interface DailyChallengePageProps {
   questions: Question[];
   onBack: () => void;
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  return [...arr].sort(() => Math.random() - 0.5);
 }
 
 function today() {
@@ -41,7 +38,8 @@ export default function DailyChallengePage({
 
   useEffect(() => {
     if (!alreadyDone) {
-      setQuizQuestions(shuffle(questions).slice(0, 10));
+      // buildQuiz shuffles pool + shuffles each question's choices
+      setQuizQuestions(buildQuiz(questions, 10));
     }
   }, [questions, alreadyDone]);
 
@@ -54,15 +52,12 @@ export default function DailyChallengePage({
 
   const handleNext = () => {
     if (idx + 1 >= quizQuestions.length) {
-      const _newScore =
-        score + (selected === Number(quizQuestions[idx]?.correctIndex) ? 0 : 0);
       setDaily({
         date: today(),
         score,
         total: quizQuestions.length,
         completed: true,
       });
-      // Update streak
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yStr = yesterday.toISOString().slice(0, 10);

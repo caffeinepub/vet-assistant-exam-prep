@@ -2,14 +2,11 @@ import { ArrowLeft, Clock, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Question } from "../backend";
 import QuestionCard from "../components/QuestionCard";
+import { buildQuiz } from "../utils/quizUtils";
 
 interface QuickStudyPageProps {
   questions: Question[];
   onBack: () => void;
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  return [...arr].sort(() => Math.random() - 0.5);
 }
 
 export default function QuickStudyPage({
@@ -17,7 +14,7 @@ export default function QuickStudyPage({
   onBack,
 }: QuickStudyPageProps) {
   const DURATION = 5 * 60; // 5 minutes
-  const [quizQuestions] = useState(() => shuffle(questions).slice(0, 10));
+  const [quizQuestions] = useState(() => buildQuiz(questions, 10));
   const [idx, setIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);

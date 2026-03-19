@@ -1,10 +1,12 @@
-import { ArrowLeft, Shuffle } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import { useCallback, useState } from "react";
 import type { Question } from "../backend";
 import LoadingScreen from "../components/LoadingScreen";
 import QuestionCard from "../components/QuestionCard";
 import ScoreScreen from "../components/ScoreScreen";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { isDebugMode, registerDebugTap } from "../utils/debugMode";
+import { buildQuiz } from "../utils/quizUtils";
 
 interface QuizPageProps {
   questions: Question[];
@@ -22,10 +24,6 @@ const CATEGORIES = [
   { key: "record_keeping", label: "Medical Record Keeping" },
 ];
 
-function shuffle<T>(arr: T[]): T[] {
-  return [...arr].sort(() => Math.random() - 0.5);
-}
-
 export default function QuizPage({ questions, loading }: QuizPageProps) {
   const [mode, setMode] = useState<"select" | "quiz" | "score">("select");
   const [categoryKey, setCategoryKey] = useState("all");
@@ -33,6 +31,10 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  const [usedQuestionIDs, setUsedQuestionIDs] = useState<Set<bigint>>(
+    new Set(),
+  );
+  const [debugOn, setDebugOn] = useState(false);
   const [bookmarks, setBookmarks] = useLocalStorage<number[]>(
     "vet_bookmarks",
     [],
@@ -43,13 +45,19 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
 
   const startQuiz = useCallback(
     (catKey: string) => {
-      const filtered =
+      let pool =
         catKey === "all"
           ? questions
           : questions.filter((q) => q.category === catKey);
-      setQuizQuestions(
-        shuffle(filtered).slice(0, Math.min(20, filtered.length)),
-      );
+
+      // Mini-quiz fix: if filtered pool is too small, fall back to full bank
+      if (pool.length < 5 && catKey !== "all") {
+        pool = questions;
+      }
+
+      const selected = buildQuiz(pool, 20);
+      setQuizQuestions(selected);
+      setUsedQuestionIDs(new Set(selected.map((q) => q.id)));
       setCurrentIdx(0);
       setSelectedIndex(null);
       setScore(0);
@@ -62,26 +70,32 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
   const handleSelect = (i: number) => {
     setSelectedIndex(i);
     const correct = Number(quizQuestions[currentIdx].correctIndex);
-    if (i === correct) {
-      setScore((s) => s + 1);
-    }
+    if (i === correct) setScore((s) => s + 1);
   };
 
   const handleNext = () => {
     if (currentIdx + 1 >= quizQuestions.length) {
-      // Save score
       const cat = quizQuestions[0]?.category || categoryKey;
       setScores((prev) => {
         const entry = prev[cat] || { correct: 0, total: 0 };
-        const newCorrect = entry.correct + score;
-        const newTotal = entry.total + quizQuestions.length;
-        return { ...prev, [cat]: { correct: newCorrect, total: newTotal } };
+        return {
+          ...prev,
+          [cat]: {
+            correct: entry.correct + score,
+            total: entry.total + quizQuestions.length,
+          },
+        };
       });
       setMode("score");
     } else {
       setCurrentIdx((i) => i + 1);
       setSelectedIndex(null);
     }
+  };
+
+  const handleCounterTap = () => {
+    const toggled = registerDebugTap();
+    if (toggled) setDebugOn(isDebugMode());
   };
 
   const currentQ = quizQuestions[currentIdx];
@@ -164,10 +178,22 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
             style={{ width: `${(currentIdx / quizQuestions.length) * 100}%` }}
           />
         </div>
-        <span className="text-xs text-gray-500 whitespace-nowrap">
+        {/* Tap 5x to toggle debug mode */}
+        <button
+          type="button"
+          onClick={handleCounterTap}
+          className="text-xs text-gray-500 whitespace-nowrap select-none"
+        >
           {currentIdx + 1}/{quizQuestions.length}
-        </span>
+        </button>
       </div>
+
+      {debugOn && currentQ && (
+        <div className="text-xs bg-yellow-50 border border-yellow-300 rounded-xl px-3 py-1.5 text-yellow-800 font-mono">
+          🔍 DEBUG — Question ID: {String(currentQ.id)} | Unique in session:{" "}
+          {String(!usedQuestionIDs.has(currentQ.id) ? "❌ DUPE" : "✅ OK")}
+        </div>
+      )}
 
       {currentQ && (
         <QuestionCard
