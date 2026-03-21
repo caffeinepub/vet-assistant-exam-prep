@@ -112,7 +112,7 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
 
   if (mode === "select") {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="paw-bg flex flex-col gap-3">
         <h2 className="text-xl font-extrabold text-gray-800">Practice Quiz</h2>
         <p className="text-sm text-gray-500">Choose a category to start</p>
         <div className="flex flex-col gap-2">
@@ -143,7 +143,7 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
 
   if (mode === "score") {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="paw-bg flex flex-col gap-4">
         <button
           type="button"
           onClick={() => setMode("select")}
@@ -163,7 +163,7 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="paw-bg flex flex-col gap-4">
       <div className="flex items-center gap-3">
         <button
           type="button"

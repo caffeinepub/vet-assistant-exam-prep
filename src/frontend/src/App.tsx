@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import type { Flashcard, Question, Scenario, VideoLesson } from "./backend";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import type { Scenario } from "./backend";
 import BottomNav, { type Page } from "./components/BottomNav";
-import LoadingScreen from "./components/LoadingScreen";
-import { useActor } from "./hooks/useActor";
+import { flashcardDeck, isDatasetsReady, questionBank } from "./data/studyData";
 import BookmarksPage from "./pages/BookmarksPage";
 import DailyChallengePage from "./pages/DailyChallengePage";
 import FlashcardsPage from "./pages/FlashcardsPage";
@@ -15,6 +15,11 @@ import ScenariosPage from "./pages/ScenariosPage";
 import VideosPage from "./pages/VideosPage";
 import VisualLearningPage from "./pages/VisualLearningPage";
 
+const questions = questionBank;
+const flashcards = flashcardDeck;
+const scenarios: Scenario[] = [];
+const videoQuestions: Record<string, never[]> = {};
+
 type SubPage =
   | "daily"
   | "quick"
@@ -24,46 +29,9 @@ type SubPage =
   | "prepVideo";
 
 export default function App() {
-  const { actor, isFetching } = useActor();
   const [tab, setTab] = useState<Page>("home");
   const [subPage, setSubPage] = useState<SubPage | null>(null);
-
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
-  const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  const [videoLessons, setVideoLessons] = useState<VideoLesson[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  const videoQuestions: Record<string, Question[]> = {};
-  for (const vl of videoLessons) {
-    videoQuestions[vl.youtubeId] = vl.quizQuestions;
-  }
-
-  useEffect(() => {
-    if (!actor) return;
-    async function load() {
-      try {
-        await actor!.initializeData();
-        const [qs, fcs, scens, vls] = await Promise.all([
-          actor!.getAllQuestions(),
-          actor!.getAllFlashcards(),
-          actor!.getAllScenarios(),
-          actor!.getAllVideoLessons(),
-        ]);
-        setQuestions(qs);
-        setFlashcards(fcs);
-        setScenarios(scens);
-        setVideoLessons(vls);
-      } catch (e) {
-        console.error(e);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, [actor]);
+  const [retryCount, setRetryCount] = useState(0);
 
   const streakRaw =
     typeof window !== "undefined" ? localStorage.getItem("vet_streak") : null;
@@ -105,27 +73,14 @@ export default function App() {
     setSubPage(null);
   };
 
-  if (isFetching || loading) {
+  if (!isDatasetsReady()) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingScreen />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-6">
-        <p className="text-red-500 font-semibold">
-          Failed to load study content.
-        </p>
-        <button
-          type="button"
-          onClick={() => window.location.reload()}
-          className="py-3 px-6 bg-teal-600 text-white rounded-2xl font-semibold"
-        >
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <p className="text-gray-600 text-lg">Loading study content...</p>
+        <Button onClick={() => setRetryCount((c) => c + 1)} variant="outline">
           Retry
-        </button>
+        </Button>
+        <span className="hidden">{retryCount}</span>
       </div>
     );
   }

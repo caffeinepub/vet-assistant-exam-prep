@@ -84,7 +84,7 @@ export default function FlashcardsPage({
 
   if (categoryKey === null) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="paw-bg flex flex-col gap-3">
         <h2 className="text-xl font-extrabold text-gray-800">Flashcards</h2>
         <p className="text-sm text-gray-500">Choose a category</p>
         {CATEGORIES.map((cat) => {
@@ -112,7 +112,7 @@ export default function FlashcardsPage({
 
   if (deck.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-4 py-10">
+      <div className="paw-bg flex flex-col items-center gap-4 py-10">
         <p className="text-gray-500">No flashcards in this category yet.</p>
         <button
           type="button"
@@ -128,7 +128,7 @@ export default function FlashcardsPage({
   const currentCard = deck[idx];
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="paw-bg flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <button
           type="button"

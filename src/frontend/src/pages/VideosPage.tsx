@@ -125,7 +125,7 @@ export default function VideosPage({ videoQuestions }: VideosPageProps) {
   // --- List view ---
   if (!selectedVideo) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="paw-bg flex flex-col gap-3">
         <h2 className="text-xl font-extrabold text-gray-800">Video Learning</h2>
         <p className="text-sm text-gray-500">
           Watch and learn, then test your knowledge
@@ -183,7 +183,7 @@ export default function VideosPage({ videoQuestions }: VideosPageProps) {
   if (quizMode) {
     if (quizDone) {
       return (
-        <div className="flex flex-col gap-4">
+        <div className="paw-bg flex flex-col gap-4">
           <button
             type="button"
             data-ocid="video.quiz_back_button"
@@ -203,7 +203,7 @@ export default function VideosPage({ videoQuestions }: VideosPageProps) {
       );
     }
     return (
-      <div className="flex flex-col gap-4">
+      <div className="paw-bg flex flex-col gap-4">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -237,7 +237,7 @@ export default function VideosPage({ videoQuestions }: VideosPageProps) {
 
   // --- Video detail view ---
   return (
-    <div className="flex flex-col gap-4">
+    <div className="paw-bg flex flex-col gap-4">
       <div className="flex items-center gap-3">
         <button
           type="button"

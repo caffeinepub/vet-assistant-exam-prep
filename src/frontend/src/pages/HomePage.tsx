@@ -106,7 +106,7 @@ export default function HomePage({
       : [];
 
   return (
-    <div className="flex flex-col gap-5 pb-4">
+    <div className="paw-bg flex flex-col gap-5 pb-4">
       <div className="flex items-center gap-3">
         <img
           src="/assets/generated/vet-logo-transparent.dim_200x200.png"
