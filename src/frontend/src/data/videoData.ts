@@ -155,4 +155,18 @@ export const videoData: VideoData[] = [
     ],
     duration: "9 min",
   },
+  {
+    youtubeId: "bnwkbz4IAY0",
+    title: "CVA Practice Test 2026",
+    duration: "15 min",
+    summary:
+      "A comprehensive Certified Veterinary Assistant exam prep video covering key topics including anatomy, pharmacology, patient care, safety, and clinical procedures to help you pass the CVA certification exam.",
+    keyTakeaways: [
+      "CVA exam covers anatomy, physiology, pharmacology, patient care, and clinical procedures",
+      "Know common drug classifications: antibiotics, analgesics, antiparasitics, and vaccines",
+      "Understand medical terminology prefixes and suffixes used in veterinary records",
+      "Review OSHA safety standards, PPE usage, and proper sharps disposal",
+      "Exam questions test both knowledge recall and practical clinical decision-making",
+    ],
+  },
 ];

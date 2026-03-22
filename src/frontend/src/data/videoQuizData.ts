@@ -299,4 +299,64 @@ export const videoQuizData: Record<string, VideoQuiz[]> = {
         "The secondary (padded) layer cushions and absorbs moisture.",
     },
   ],
+  bnwkbz4IAY0: [
+    {
+      question:
+        "Which of the following is a core topic covered on the CVA certification exam?",
+      options: [
+        "Human anatomy and physiology",
+        "Veterinary pharmacology and patient care",
+        "Restaurant sanitation codes",
+        "Agricultural crop management",
+      ],
+      correctIndex: 1,
+      explanation:
+        "The CVA exam covers veterinary-specific topics including pharmacology, patient care, anatomy, and clinical procedures.",
+    },
+    {
+      question: "What drug classification do antibiotics belong to?",
+      options: [
+        "Analgesics",
+        "Antiparasitics",
+        "Antimicrobials",
+        "Antihistamines",
+      ],
+      correctIndex: 2,
+      explanation:
+        "Antibiotics are antimicrobial drugs that kill or inhibit the growth of bacteria.",
+    },
+    {
+      question: "What does the medical prefix 'brady-' mean?",
+      options: ["Fast", "Slow", "Large", "Small"],
+      correctIndex: 1,
+      explanation:
+        "'Brady-' means slow; for example, bradycardia means a slow heart rate.",
+    },
+    {
+      question:
+        "According to OSHA standards, where must sharps be disposed of?",
+      options: [
+        "Regular trash can",
+        "Biohazard bag",
+        "Puncture-resistant sharps container",
+        "Recycling bin",
+      ],
+      correctIndex: 2,
+      explanation:
+        "OSHA requires sharps to be discarded in puncture-resistant, labeled sharps containers to prevent needlestick injuries.",
+    },
+    {
+      question:
+        "Which type of question is most common on the CVA practice exam?",
+      options: [
+        "Essay questions requiring detailed written answers",
+        "Multiple-choice questions testing knowledge and clinical reasoning",
+        "True/false questions only",
+        "Oral examination questions",
+      ],
+      correctIndex: 1,
+      explanation:
+        "CVA exams primarily use multiple-choice questions that test both factual knowledge and practical decision-making skills.",
+    },
+  ],
 };
