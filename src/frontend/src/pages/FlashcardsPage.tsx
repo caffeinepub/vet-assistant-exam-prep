@@ -11,28 +11,48 @@ interface FlashcardsPageProps {
   loading: boolean;
 }
 
-const CATEGORIES = [
+const BASE_CATEGORIES = [
   { key: "all", label: "All Categories" },
-  { key: "instruments", label: "Veterinary Instruments" },
-  { key: "vital_signs", label: "Vital Sign Ranges" },
-  { key: "medical_terms", label: "Medical Terms" },
-  { key: "animal_handling", label: "Animal Handling" },
-  { key: "restraint", label: "Restraint Techniques" },
-  { key: "sanitation", label: "Sanitation & Safety" },
-  { key: "terminology", label: "Anatomy & Terminology" },
-  { key: "communication", label: "Communication & Records" },
+  { key: "administration", label: "Administration" },
+  { key: "sanitation", label: "Sanitation" },
+  { key: "pharmacology", label: "Pharmacology" },
+  { key: "nursing", label: "Nursing" },
+  { key: "laboratory", label: "Laboratory" },
+  { key: "legal_safety_ethics", label: "Legal, Safety & Ethics" },
+  { key: "radiology", label: "Radiology" },
+  { key: "surgery", label: "Surgery" },
+  { key: "animal_medicine", label: "Animal Medicine" },
 ];
+
+function buildCategories(flashcards: Flashcard[]) {
+  const knownKeys = new Set(BASE_CATEGORIES.map((c) => c.key));
+  const extra: { key: string; label: string }[] = [];
+  for (const card of flashcards) {
+    if (!knownKeys.has(card.category)) {
+      knownKeys.add(card.category);
+      extra.push({
+        key: card.category,
+        label: card.category
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase()),
+      });
+    }
+  }
+  const all = [...BASE_CATEGORIES, ...extra];
+  // Filter out categories with 0 cards (except "all")
+  return all.filter(
+    (cat) =>
+      cat.key === "all" || flashcards.some((f) => f.category === cat.key),
+  );
+}
 
 export default function FlashcardsPage({
   flashcards,
   loading,
 }: FlashcardsPageProps) {
   const [categoryKey, setCategoryKey] = useState<string | null>(null);
-  // shuffledDeck is built once per session (or on manual reshuffle)
   const [deck, setDeck] = useState<Flashcard[]>([]);
-  // currentIndex advances sequentially — no random picks
   const [idx, setIdx] = useState(0);
-  // track IDs shown this session to prevent any accidental repeats
   const [shownIDs, setShownIDs] = useState<Set<bigint>>(new Set());
   const [debugOn, setDebugOn] = useState(false);
 
@@ -46,7 +66,6 @@ export default function FlashcardsPage({
     setCategoryKey(key);
   };
 
-  // Manual reshuffle — only after completing the deck or user request
   const handleShuffle = () => {
     setDeck((d) => shuffle(d));
     setIdx(0);
@@ -56,7 +75,6 @@ export default function FlashcardsPage({
   const handleNext = () => {
     const nextIdx = idx + 1;
     if (nextIdx >= deck.length) {
-      // Full deck complete — reshuffle for a new round
       const reshuffled = shuffle(deck);
       setDeck(reshuffled);
       setIdx(0);
@@ -83,6 +101,7 @@ export default function FlashcardsPage({
   if (loading) return <LoadingScreen />;
 
   if (categoryKey === null) {
+    const CATEGORIES = buildCategories(flashcards);
     return (
       <div className="paw-bg flex flex-col gap-3">
         <h2 className="text-xl font-extrabold text-gray-800">Flashcards</h2>
@@ -147,7 +166,6 @@ export default function FlashcardsPage({
         </button>
       </div>
 
-      {/* Tap counter 5x to toggle debug */}
       <button
         type="button"
         onClick={handleCounterTap}
@@ -163,7 +181,6 @@ export default function FlashcardsPage({
         </div>
       )}
 
-      {/* Progress dots */}
       <div className="flex gap-1 justify-center flex-wrap">
         {deck.slice(0, Math.min(deck.length, 20)).map((_, i) => (
           <div

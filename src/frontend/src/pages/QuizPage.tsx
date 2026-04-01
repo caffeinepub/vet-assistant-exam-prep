@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ClipboardList } from "lucide-react";
 import { useCallback, useState } from "react";
 import type { Question } from "../backend";
 import LoadingScreen from "../components/LoadingScreen";
@@ -6,7 +6,7 @@ import QuestionCard from "../components/QuestionCard";
 import ScoreScreen from "../components/ScoreScreen";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { isDebugMode, registerDebugTap } from "../utils/debugMode";
-import { buildQuiz } from "../utils/quizUtils";
+import { buildQuiz, buildWeightedExam } from "../utils/quizUtils";
 
 interface QuizPageProps {
   questions: Question[];
@@ -15,18 +15,34 @@ interface QuizPageProps {
 
 const CATEGORIES = [
   { key: "all", label: "All Categories" },
-  { key: "animal_restraint", label: "Animal Restraint" },
-  { key: "vital_signs", label: "Animal Vital Signs" },
-  { key: "instruments", label: "Veterinary Instruments" },
-  { key: "sanitation", label: "Clinic Sanitation & Safety" },
-  { key: "terminology", label: "Veterinary Terminology" },
-  { key: "client_communication", label: "Client Communication" },
-  { key: "record_keeping", label: "Medical Record Keeping" },
+  { key: "sanitation", label: "Sanitation & Safety" },
+  { key: "pharmacology", label: "Pharmacology" },
+  { key: "administration", label: "Administration" },
+  { key: "nursing", label: "Nursing Care" },
+  { key: "laboratory", label: "Laboratory Procedures" },
+  { key: "legal_safety_ethics", label: "Legal, Safety & Ethics" },
+  { key: "radiology", label: "Radiology" },
+  { key: "surgery", label: "Surgery" },
+  { key: "animal_medicine", label: "Animal Medicine" },
 ];
+
+// CVA exam weight labels shown in the category list
+const WEIGHT_LABELS: Record<string, string> = {
+  sanitation: "18%",
+  pharmacology: "15%",
+  administration: "13%",
+  nursing: "13%",
+  laboratory: "11%",
+  legal_safety_ethics: "9%",
+  radiology: "7%",
+  surgery: "7%",
+  animal_medicine: "7%",
+};
 
 export default function QuizPage({ questions, loading }: QuizPageProps) {
   const [mode, setMode] = useState<"select" | "quiz" | "score">("select");
   const [categoryKey, setCategoryKey] = useState("all");
+  const [isExamMode, setIsExamMode] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -50,7 +66,6 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
           ? questions
           : questions.filter((q) => q.category === catKey);
 
-      // Mini-quiz fix: if filtered pool is too small, fall back to full bank
       if (pool.length < 5 && catKey !== "all") {
         pool = questions;
       }
@@ -62,10 +77,23 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
       setSelectedIndex(null);
       setScore(0);
       setCategoryKey(catKey);
+      setIsExamMode(false);
       setMode("quiz");
     },
     [questions],
   );
+
+  const startExamMode = useCallback(() => {
+    const selected = buildWeightedExam(questions, 50);
+    setQuizQuestions(selected);
+    setUsedQuestionIDs(new Set(selected.map((q) => q.id)));
+    setCurrentIdx(0);
+    setSelectedIndex(null);
+    setScore(0);
+    setCategoryKey("exam");
+    setIsExamMode(true);
+    setMode("quiz");
+  }, [questions]);
 
   const handleSelect = (i: number) => {
     setSelectedIndex(i);
@@ -75,7 +103,9 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
 
   const handleNext = () => {
     if (currentIdx + 1 >= quizQuestions.length) {
-      const cat = quizQuestions[0]?.category || categoryKey;
+      const cat = isExamMode
+        ? "exam"
+        : quizQuestions[0]?.category || categoryKey;
       setScores((prev) => {
         const entry = prev[cat] || { correct: 0, total: 0 };
         return {
@@ -114,13 +144,42 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
     return (
       <div className="paw-bg flex flex-col gap-3">
         <h2 className="text-xl font-extrabold text-gray-800">Practice Quiz</h2>
-        <p className="text-sm text-gray-500">Choose a category to start</p>
+        <p className="text-sm text-gray-500">Choose a mode to start</p>
+
+        {/* Exam Mode — highlighted card */}
+        <button
+          type="button"
+          data-ocid="quiz.exam_mode"
+          onClick={startExamMode}
+          className="w-full bg-teal-600 text-white rounded-2xl p-4 text-left shadow-md flex items-center justify-between active:scale-[0.98] transition-transform"
+        >
+          <div className="flex items-center gap-3">
+            <ClipboardList size={20} className="shrink-0" />
+            <div>
+              <p className="font-extrabold text-base">Exam Simulation Mode</p>
+              <p className="text-teal-100 text-xs mt-0.5">
+                50 questions · Weighted by real CVA exam distribution
+              </p>
+            </div>
+          </div>
+          <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full font-semibold whitespace-nowrap">
+            {questions.length} Qs
+          </span>
+        </button>
+
+        <div className="flex items-center gap-2 my-1">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400">or study by category</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
         <div className="flex flex-col gap-2">
           {CATEGORIES.map((cat) => {
             const count =
               cat.key === "all"
                 ? questions.length
                 : questions.filter((q) => q.category === cat.key).length;
+            const weight = WEIGHT_LABELS[cat.key];
             return (
               <button
                 type="button"
@@ -129,7 +188,16 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
                 onClick={() => startQuiz(cat.key)}
                 className="w-full bg-white rounded-2xl p-4 text-left border border-gray-100 shadow-sm flex items-center justify-between active:scale-[0.98] transition-transform"
               >
-                <span className="font-semibold text-gray-700">{cat.label}</span>
+                <div>
+                  <span className="font-semibold text-gray-700">
+                    {cat.label}
+                  </span>
+                  {weight && (
+                    <span className="ml-2 text-xs text-teal-500 font-medium">
+                      {weight} of exam
+                    </span>
+                  )}
+                </div>
                 <span className="text-xs bg-teal-50 text-teal-600 px-2 py-1 rounded-full font-semibold">
                   {count} Qs
                 </span>
@@ -151,10 +219,15 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
         >
           <ArrowLeft size={16} /> Categories
         </button>
+        {isExamMode && (
+          <div className="bg-teal-50 border border-teal-200 rounded-2xl px-4 py-2 text-sm text-teal-700 font-medium">
+            Exam Simulation — CVA weighted distribution
+          </div>
+        )}
         <ScoreScreen
           score={score}
           total={quizQuestions.length}
-          onRetry={() => startQuiz(categoryKey)}
+          onRetry={isExamMode ? startExamMode : () => startQuiz(categoryKey)}
           onBack={() => setMode("select")}
           backLabel="Categories"
         />
@@ -178,7 +251,6 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
             style={{ width: `${(currentIdx / quizQuestions.length) * 100}%` }}
           />
         </div>
-        {/* Tap 5x to toggle debug mode */}
         <button
           type="button"
           onClick={handleCounterTap}
@@ -188,9 +260,19 @@ export default function QuizPage({ questions, loading }: QuizPageProps) {
         </button>
       </div>
 
+      {isExamMode && (
+        <div className="flex items-center gap-2 bg-teal-50 border border-teal-200 rounded-xl px-3 py-1.5">
+          <ClipboardList size={14} className="text-teal-600 shrink-0" />
+          <span className="text-xs text-teal-700 font-semibold">
+            Exam Simulation — CVA weighted distribution
+          </span>
+        </div>
+      )}
+
       {debugOn && currentQ && (
         <div className="text-xs bg-yellow-50 border border-yellow-300 rounded-xl px-3 py-1.5 text-yellow-800 font-mono">
-          🔍 DEBUG — Question ID: {String(currentQ.id)} | Unique in session:{" "}
+          🔍 DEBUG — Question ID: {String(currentQ.id)} | Category:{" "}
+          {currentQ.category} | Unique:{" "}
           {String(!usedQuestionIDs.has(currentQ.id) ? "❌ DUPE" : "✅ OK")}
         </div>
       )}
