@@ -1,172 +1,322 @@
-export interface VideoData {
-  youtubeId: string;
+export type VideoType = "video" | "playlist";
+
+export interface VideoLesson {
+  id: number;
   title: string;
-  summary: string;
-  keyTakeaways: string[];
-  duration: string;
+  type: VideoType;
+  // video-only fields
+  videoId?: string;
+  thumbnail?: string;
+  // playlist-only fields
+  playlistId?: string;
+  // shared
+  embedUrl: string;
+  youtubeUrl: string;
+  // optional metadata (retained from previous entries where available)
+  summary?: string;
+  keyTakeaways?: string[];
+  duration?: string;
 }
 
-export const videoData: VideoData[] = [
+export const videoLessons: VideoLesson[] = [
   {
-    youtubeId: "GZV6X9l9l8E",
-    title: "Vital Signs Training",
-    duration: "8 min",
+    id: 1,
+    title: "Basic Blood Collection",
+    type: "video",
+    videoId: "uYyh3DIQ91c",
+    embedUrl: "https://www.youtube.com/embed/uYyh3DIQ91c",
+    youtubeUrl: "https://youtu.be/uYyh3DIQ91c",
+    thumbnail: "https://img.youtube.com/vi/uYyh3DIQ91c/0.jpg",
     summary:
-      "Learn to accurately measure and record vital signs in dogs and cats, including temperature, pulse, respiration, and mucous membrane color.",
+      "Step-by-step guide to basic blood collection techniques in veterinary patients.",
     keyTakeaways: [
-      "Normal dog temperature: 101–102.5°F; cat temperature: 100.5–102.5°F",
-      "Measure pulse at the femoral artery; count for 15 seconds and multiply by 4",
-      "Normal respiratory rate: dogs 10–30 breaths/min, cats 20–30 breaths/min",
-      "Assess mucous membranes for color and capillary refill time (normal < 2 sec)",
-      "Always record TPR accurately in patient medical records",
+      "Identify appropriate venipuncture sites",
+      "Use proper needle and syringe technique",
+      "Minimize patient stress during collection",
+      "Label samples correctly for the lab",
     ],
+    duration: "8 min",
   },
   {
-    youtubeId: "Gg2rRkR8X9E",
-    title: "Veterinary Instruments Explained",
-    duration: "10 min",
+    id: 2,
+    title: "Taking Vital Signs",
+    type: "video",
+    videoId: "z9qA_LrefNU",
+    embedUrl: "https://www.youtube.com/embed/z9qA_LrefNU",
+    youtubeUrl: "https://youtu.be/z9qA_LrefNU",
+    thumbnail: "https://img.youtube.com/vi/z9qA_LrefNU/0.jpg",
     summary:
-      "Identify and understand the purpose of common veterinary surgical and diagnostic instruments used in everyday clinical practice.",
+      "Learn how to accurately measure temperature, pulse, and respiration in veterinary patients.",
     keyTakeaways: [
-      "Hemostats clamp blood vessels; Kelly vs. Mosquito sizes differ by jaw length",
-      "Thumb forceps (tissue forceps) grasp tissue without locking",
-      "Needle holders hold the needle during suturing; use a wrist-turn motion",
+      "Normal dog temperature: 101–102.5°F; cat: 100.5–102.5°F",
+      "Measure pulse at the femoral artery",
+      "Normal respiratory rate: dogs 10–30 breaths/min",
+      "Record TPR accurately in patient medical records",
+    ],
+    duration: "9 min",
+  },
+  {
+    id: 3,
+    title: "Veterinary Instruments Explained",
+    type: "video",
+    videoId: "3jpQLW18G6U",
+    embedUrl: "https://www.youtube.com/embed/3jpQLW18G6U",
+    youtubeUrl: "https://youtu.be/3jpQLW18G6U",
+    thumbnail: "https://img.youtube.com/vi/3jpQLW18G6U/0.jpg",
+    summary:
+      "Introduction to common veterinary surgical and diagnostic instruments used in clinical practice.",
+    keyTakeaways: [
+      "Hemostats clamp blood vessels during surgery",
       "Metzenbaum scissors cut delicate tissue; Mayo scissors cut heavy tissue",
       "Always pass instruments handle-first to the surgeon",
+      "Instruments must be sterilized after every procedure",
     ],
+    duration: "10 min",
   },
   {
-    youtubeId: "Qm3VQ9Z2Zk8",
-    title: "Animal Handling Basics",
-    duration: "9 min",
+    id: 4,
+    title: "40 Common Veterinary Equipment",
+    type: "video",
+    videoId: "ke0c3TQcjEU",
+    embedUrl: "https://www.youtube.com/embed/ke0c3TQcjEU",
+    youtubeUrl: "https://youtu.be/ke0c3TQcjEU",
+    thumbnail: "https://img.youtube.com/vi/ke0c3TQcjEU/0.jpg",
     summary:
-      "Master safe handling and restraint techniques for dogs and cats to protect both the animal and clinical staff during examinations.",
+      "Visual overview of 40 pieces of common veterinary equipment and their clinical uses.",
     keyTakeaways: [
-      "Approach animals calmly; read body language before touching",
-      "Use the scruff hold only as needed—do not use as primary cat restraint",
-      "Lateral recumbency: animal on side; used for blood draws and X-rays",
-      "Muzzles prevent bites; ensure proper fit and monitor for distress",
-      "Always use the minimum restraint necessary to reduce patient stress",
+      "Recognize diagnostic equipment like otoscopes and ophthalmoscopes",
+      "Identify monitoring equipment used in surgery",
+      "Know the purpose of common nursing tools",
+      "Understand basic imaging and laboratory equipment",
     ],
+    duration: "12 min",
   },
   {
-    youtubeId: "3JpQK7wJY5E",
-    title: "Cleaning and Disinfection",
-    duration: "7 min",
+    id: 5,
+    title: "Surgical Instruments",
+    type: "video",
+    videoId: "1jEOjg29-e0",
+    embedUrl: "https://www.youtube.com/embed/1jEOjg29-e0",
+    youtubeUrl: "https://youtu.be/1jEOjg29-e0",
+    thumbnail: "https://img.youtube.com/vi/1jEOjg29-e0/0.jpg",
     summary:
-      "Understand the correct procedures for cleaning and disinfecting veterinary clinic surfaces, instruments, and cages to prevent disease transmission.",
+      "Detailed walkthrough of surgical instruments used in veterinary operating rooms.",
     keyTakeaways: [
-      "Cleaning removes debris; disinfection kills pathogens on surfaces",
-      "Always clean before disinfecting—organic matter inactivates most disinfectants",
-      "Follow contact time listed on the disinfectant label for full effectiveness",
-      "PPE (gloves, gown, mask) must be worn when handling disinfectants",
-      "Contaminated waste goes in biohazard bags; sharps in sharps containers",
+      "Identify scalpels, retractors, and suture needles",
+      "Understand the difference between tissue and thumb forceps",
+      "Know proper instrument handling and passing technique",
+      "Sterilization methods for surgical instruments",
     ],
-  },
-  {
-    youtubeId: "Z7zZk3z4Y0M",
-    title: "Basic Bandaging Techniques",
     duration: "11 min",
+  },
+  {
+    id: 6,
+    title: "Animal Restraints Playlist",
+    type: "playlist",
+    playlistId: "PLP607gU_xJ_2iBZC8OvDQIGpyEcY5c4HU",
+    embedUrl:
+      "https://www.youtube.com/embed/videoseries?list=PLP607gU_xJ_2iBZC8OvDQIGpyEcY5c4HU",
+    youtubeUrl:
+      "https://youtube.com/playlist?list=PLP607gU_xJ_2iBZC8OvDQIGpyEcY5c4HU",
     summary:
-      "Learn how to apply primary, secondary, and tertiary bandage layers correctly to protect wounds and support healing in veterinary patients.",
+      "A curated playlist covering animal restraint techniques for dogs, cats, and other species.",
     keyTakeaways: [
-      "Primary layer (contact layer) absorbs exudate and protects the wound",
-      "Secondary layer (padded layer) provides cushioning and absorbs moisture",
-      "Tertiary layer (outer layer) secures the bandage and protects from environment",
-      "Check bandages every 12–24 hours for swelling, odor, or slipping",
-      "Never apply a bandage too tightly—check for digit swelling or coldness",
+      "Multiple restraint techniques across different species",
+      "Proper positioning for exams and procedures",
+      "Low-stress handling principles",
+      "Safety tips for both staff and patients",
     ],
   },
   {
-    youtubeId: "f5bMnfxGMI8",
-    title: "Dog Restraint Techniques",
+    id: 7,
+    title: "Veterinary Basics",
+    type: "video",
+    videoId: "lIY2sYTUh2Y",
+    embedUrl: "https://www.youtube.com/embed/lIY2sYTUh2Y",
+    youtubeUrl: "https://youtu.be/lIY2sYTUh2Y",
+    thumbnail: "https://img.youtube.com/vi/lIY2sYTUh2Y/0.jpg",
     summary:
-      "Learn proper methods for safely restraining dogs during veterinary exams. Good restraint keeps both the patient and staff safe.",
+      "Foundational concepts and daily responsibilities for veterinary assistants in a clinical setting.",
     keyTakeaways: [
-      "Identify lateral and sternal recumbency positions",
-      "Apply safe standing restraint technique",
-      "Recognize signs of stress and pain in dogs",
-      "Know when to use a muzzle",
+      "Core daily duties of a veterinary assistant",
+      "Professional communication with clients and staff",
+      "Introduction to clinic workflow and patient flow",
+      "Basic safety and hygiene practices",
+    ],
+    duration: "10 min",
+  },
+  {
+    id: 8,
+    title: "Animal Skeletal Anatomy",
+    type: "video",
+    videoId: "6OoFyLHqjLM",
+    embedUrl: "https://www.youtube.com/embed/6OoFyLHqjLM",
+    youtubeUrl: "https://youtu.be/6OoFyLHqjLM",
+    thumbnail: "https://img.youtube.com/vi/6OoFyLHqjLM/0.jpg",
+    summary:
+      "Overview of animal skeletal anatomy relevant to veterinary assistant exam preparation.",
+    keyTakeaways: [
+      "Major bone groups in dogs and cats",
+      "Anatomical terminology (proximal, distal, cranial, caudal)",
+      "Common fracture sites seen in clinical practice",
+      "How anatomy knowledge supports patient positioning",
+    ],
+    duration: "9 min",
+  },
+  {
+    id: 9,
+    title: "Cleaning vs Disinfection",
+    type: "video",
+    videoId: "PGD0cG_lud4",
+    embedUrl: "https://www.youtube.com/embed/PGD0cG_lud4",
+    youtubeUrl: "https://youtu.be/PGD0cG_lud4",
+    thumbnail: "https://img.youtube.com/vi/PGD0cG_lud4/0.jpg",
+    summary:
+      "Understand the difference between cleaning, disinfection, and sterilization and when each is required.",
+    keyTakeaways: [
+      "Cleaning removes debris; disinfection kills pathogens",
+      "Always clean before disinfecting",
+      "Sterilization eliminates all microbial life",
+      "Choose the right product for the level of decontamination needed",
+    ],
+    duration: "7 min",
+  },
+  {
+    id: 10,
+    title: "Clinic Disinfection",
+    type: "video",
+    videoId: "7873scRTeYM",
+    embedUrl: "https://www.youtube.com/embed/7873scRTeYM",
+    youtubeUrl: "https://youtu.be/7873scRTeYM",
+    thumbnail: "https://img.youtube.com/vi/7873scRTeYM/0.jpg",
+    summary:
+      "Proper procedures for disinfecting veterinary clinic areas to prevent the spread of infectious disease.",
+    keyTakeaways: [
+      "High-touch surfaces require frequent disinfection",
+      "Follow label directions for dilution and contact time",
+      "Isolation areas need enhanced protocols",
+      "Proper PPE must be worn during disinfection",
     ],
     duration: "8 min",
   },
   {
-    youtubeId: "HKpR0fEMDso",
-    title: "Cat Towel Restraint (Kitty Burrito)",
+    id: 11,
+    title: "Cleaning a Cat Kennel",
+    type: "video",
+    videoId: "0_9v5Z65j7U",
+    embedUrl: "https://www.youtube.com/embed/0_9v5Z65j7U",
+    youtubeUrl: "https://youtu.be/0_9v5Z65j7U",
+    thumbnail: "https://img.youtube.com/vi/0_9v5Z65j7U/0.jpg",
     summary:
-      "Master the towel wrap technique to safely restrain cats for examination without causing undue stress.",
+      "Step-by-step technique for safely and thoroughly cleaning a cat kennel between patients.",
     keyTakeaways: [
-      "Perform the kitty burrito wrap correctly",
-      "Minimize cat stress during restraint",
-      "Safely expose one limb at a time for procedures",
-      "Understand when towel restraint is appropriate",
+      "Remove all waste and soiled bedding first",
+      "Apply appropriate disinfectant and allow contact time",
+      "Rinse and dry completely before adding new bedding",
+      "Reduce stress by using unscented products when possible",
     ],
     duration: "6 min",
   },
   {
-    youtubeId: "kBPZnSFGXNk",
-    title: "Taking a Dog's Temperature",
+    id: 12,
+    title: "Surgical Equipment Cleaning Playlist",
+    type: "playlist",
+    playlistId: "PLH6HdpinGr_Yr_jUkGNv6sUCC4FYx-Zjl",
+    embedUrl:
+      "https://www.youtube.com/embed/videoseries?list=PLH6HdpinGr_Yr_jUkGNv6sUCC4FYx-Zjl",
+    youtubeUrl:
+      "https://youtube.com/playlist?list=PLH6HdpinGr_Yr_jUkGNv6sUCC4FYx-Zjl",
     summary:
-      "Step-by-step guide for accurately measuring a dog's rectal temperature and recording your findings.",
+      "Playlist covering the cleaning, decontamination, and sterilization of surgical instruments.",
     keyTakeaways: [
-      "Prepare and lubricate the thermometer correctly",
-      "Position the patient safely for temperature measurement",
-      "Record and interpret temperature readings",
-      "Know normal temperature ranges for dogs",
+      "Pre-soak and manual scrub technique",
+      "Ultrasonic cleaner usage and benefits",
+      "Autoclave sterilization cycle parameters",
+      "Packaging and storage of sterile instruments",
     ],
-    duration: "5 min",
   },
   {
-    youtubeId: "0GXbQ3mIVAI",
-    title: "Checking Heart Rate with a Stethoscope",
+    id: 13,
+    title: "Handling Animals Playlist",
+    type: "playlist",
+    playlistId: "PLH6HdpinGr_ZmWKvR_xosZCYM74uYp2zz",
+    embedUrl:
+      "https://www.youtube.com/embed/videoseries?list=PLH6HdpinGr_ZmWKvR_xosZCYM74uYp2zz",
+    youtubeUrl:
+      "https://youtube.com/playlist?list=PLH6HdpinGr_ZmWKvR_xosZCYM74uYp2zz",
     summary:
-      "Learn to accurately assess heart rate and identify normal versus abnormal heart sounds in veterinary patients.",
+      "Comprehensive playlist on handling dogs, cats, and other common veterinary patients safely.",
     keyTakeaways: [
-      "Place stethoscope correctly on the patient's chest",
-      "Count beats per minute accurately",
-      "Know normal heart rate ranges by species",
-      "Identify when to report abnormal sounds to the veterinarian",
+      "Species-specific handling approaches",
+      "Reading animal body language and stress signals",
+      "Restraint techniques for common procedures",
+      "Low-stress handling to improve patient compliance",
     ],
-    duration: "7 min",
   },
   {
-    youtubeId: "eV_KxuGjc1Y",
-    title: "Veterinary Instrument Identification",
+    id: 14,
+    title: "Dog Wrapping & Basic Care",
+    type: "video",
+    videoId: "2T1ePIGbD2w",
+    embedUrl: "https://www.youtube.com/embed/2T1ePIGbD2w",
+    youtubeUrl: "https://youtu.be/2T1ePIGbD2w",
+    thumbnail: "https://img.youtube.com/vi/2T1ePIGbD2w/0.jpg",
     summary:
-      "Identify and describe the use of common veterinary surgical instruments used in routine procedures.",
+      "Learn how to apply basic wraps and provide fundamental nursing care for canine patients.",
     keyTakeaways: [
-      "Name at least 10 common surgical instruments",
-      "Describe the function of each instrument",
-      "Understand proper handling during surgery",
-      "Know basic sterilization requirements",
+      "Proper wrap application to prevent pressure sores",
+      "Monitoring wrapped limbs for swelling or discomfort",
+      "Providing comfort and environmental enrichment for hospitalized dogs",
+      "Documenting nursing observations in patient records",
     ],
-    duration: "10 min",
+    duration: "8 min",
   },
   {
-    youtubeId: "NbCiZkJjvek",
-    title: "Clinic Sanitation Procedures",
+    id: 15,
+    title: "Bandage & Splint Application",
+    type: "video",
+    videoId: "uuxfoxWiEG4",
+    embedUrl: "https://www.youtube.com/embed/uuxfoxWiEG4",
+    youtubeUrl: "https://youtu.be/uuxfoxWiEG4",
+    thumbnail: "https://img.youtube.com/vi/uuxfoxWiEG4/0.jpg",
     summary:
-      "Proper sanitation and disinfection protocols to maintain a safe and hygienic veterinary clinic environment.",
+      "Detailed guide to applying bandages and splints correctly to support healing in veterinary patients.",
     keyTakeaways: [
-      "Differentiate between cleaning, disinfection, and sterilization",
-      "Apply correct disinfectant concentrations and contact times",
-      "Follow proper PPE protocols during sanitation",
-      "Maintain a safe clinic environment for patients and staff",
+      "Three-layer bandage system: primary, secondary, tertiary",
+      "Splint placement to immobilize fractures",
+      "Check every 12–24 hours for swelling or slipping",
+      "Never bandage too tightly — check digit circulation",
     ],
-    duration: "9 min",
+    duration: "11 min",
   },
   {
-    youtubeId: "bnwkbz4IAY0",
-    title: "CVA Practice Test 2026",
-    duration: "15 min",
+    id: 16,
+    title: "Towel Wrap a Cat",
+    type: "video",
+    videoId: "XCi59dvAz7g",
+    embedUrl: "https://www.youtube.com/embed/XCi59dvAz7g",
+    youtubeUrl: "https://youtu.be/XCi59dvAz7g",
+    thumbnail: "https://img.youtube.com/vi/XCi59dvAz7g/0.jpg",
     summary:
-      "A comprehensive Certified Veterinary Assistant exam prep video covering key topics including anatomy, pharmacology, patient care, safety, and clinical procedures to help you pass the CVA certification exam.",
+      "Master the kitty burrito towel wrap technique for safe, low-stress cat restraint during exams.",
     keyTakeaways: [
-      "CVA exam covers anatomy, physiology, pharmacology, patient care, and clinical procedures",
-      "Know common drug classifications: antibiotics, analgesics, antiparasitics, and vaccines",
-      "Understand medical terminology prefixes and suffixes used in veterinary records",
-      "Review OSHA safety standards, PPE usage, and proper sharps disposal",
-      "Exam questions test both knowledge recall and practical clinical decision-making",
+      "Fold the towel correctly for secure wrapping",
+      "Expose one limb at a time for procedures",
+      "Monitor breathing throughout the restraint",
+      "Towel wraps reduce stress compared to manual scruffing",
     ],
+    duration: "6 min",
   },
 ];
+
+// Legacy compatibility export — maps the old VideoData shape for any
+// components still referencing videoData by youtubeId key
+export const videoData = videoLessons
+  .filter((v) => v.type === "video" && v.videoId)
+  .map((v) => ({
+    youtubeId: v.videoId as string,
+    title: v.title,
+    summary: v.summary ?? "",
+    keyTakeaways: v.keyTakeaways ?? [],
+    duration: v.duration ?? "",
+  }));
